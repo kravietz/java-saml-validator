@@ -40,18 +40,6 @@ public class Validator {
 
     private final static Logger LOG = Logger.getLogger(Validator.class.getName());
 
-    /*
-     * XPath location of the Signature element in the validated document
-     * Example: "/wst:RequestSecurityTokenResponse/:Signature"
-     */
-//    public String signatureXPath = null;
-
-    /*
-     * XPath location of the Assertion element in the validated document
-     * Example: "/wst:RequestSecurityTokenResponse/wst:RequestedSecurityToken/saml:Assertion"
-     */
-//    public String bodyXPath = null;
-
     private Element bodyElement = null;
     private Element signatureElement = null;
     private Element validBody = null;
@@ -59,7 +47,7 @@ public class Validator {
     private String idNamespace = null;
 
     /**
-     * Obtains validated assertion node.
+     * Obtains validated body node.
      *
      * @return the assertion if validation was successful, null if not.
      */
@@ -85,18 +73,24 @@ public class Validator {
     /**
      * Validate boolean.
      *
-     * @param input the input
-     * @return the boolean
+     * @param input the input document for validation
+     * @param keyFile certificate key file in DER forma (filename)
+     * @param schemaFile schema file for the input document
+     * @param signatureXPath XPath location of the Signature element in the validated document
+     *                       Example: "/wst:RequestSecurityTokenResponse/:Signature"
+     * @param bodyXPath  XPath location of the signed body element in the validated document
+     *                  Example: "/wst:RequestSecurityTokenResponse/wst:RequestedSecurityToken/saml:Assertion"
+     * @return the validation status
      * @throws SAXException the sAX exception
-     * @throws IOException the iO exception
-     * @throws ParserConfigurationException the parser configuration exception
-     * @throws XPathExpressionException the x path expression exception
-     * @throws KeyStoreException the key store exception
-     * @throws NoSuchAlgorithmException the no such algorithm exception
-     * @throws CertificateException the certificate exception
-     * @throws MarshalException the marshal exception
-     * @throws XMLSignatureException the xML signature exception
-     * @throws InvalidKeySpecException the invalid key spec exception
+     * @throws SAXException the sAX exception
+     * @throws SAXException the sAX exception
+     * @throws SAXException the sAX exception
+     * @throws SAXException the sAX exception
+     * @throws SAXException the sAX exception
+     * @throws SAXException the sAX exception
+     * @throws SAXException the sAX exception
+     * @throws SAXException the sAX exception
+     * @throws SAXException the sAX exception
      */
     public boolean validate(InputStream input, String keyFile, String schemaFile, String signatureXPath, String bodyXPath)
             throws SAXException, IOException, // db.parse()
@@ -164,7 +158,7 @@ public class Validator {
          *  Reference:
          *  http://xerces.apache.org/xerces2-j/features.html
          */
-        /*
+
         final Map <String, Boolean> hm = new HashMap<String, Boolean>();
         hm.put("http://apache.org/xml/features/validation/schema", true);
         hm.put("http://apache.org/xml/features/validation/schema-full-checking", true);
@@ -180,10 +174,10 @@ public class Validator {
             try {
                 factory.setFeature(entry.getKey(), entry.getValue());
             } catch (Exception e) {
-                LOG.warning("Unsupported XML parser feature" + entry.getKey());
+                LOG.warning("Unsupported XML parser feature " + entry.getKey());
             }
         }
-        */
+
     	/*
     	 * Create XML parser object from previously configured base.
     	 */

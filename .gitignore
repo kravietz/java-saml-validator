@@ -1,6 +1,13 @@
+.DS_Store
 *.class
+src/test
+out
+.idea
 
 # Package Files #
 *.jar
 *.war
 *.ear
+
+# these are private
+gg*

@@ -8,16 +8,18 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import java.io.FileInputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 public class SamlEntityResolver implements EntityResolver {
 
     private final static Logger LOG = Logger.getLogger(SamlEntityResolver.class.getName());
 
+    @Override
     public InputSource resolveEntity (String publicId, String systemId) throws SAXException,  java.io.IOException
     {
 
-        InputSource src = null;
         String file = null;
 
         if (systemId.endsWith("oasis-200401-wss-wssecurity-secext-1.0.xsd")) {
@@ -48,7 +50,7 @@ public class SamlEntityResolver implements EntityResolver {
 
         LOG.info("resolveEntity query: systemId=" + systemId + " publicId=" + publicId + " returns \"" + file + "\"");
 
-        src = new InputSource(new FileInputStream(file));
-        return src;
+        InputSource inputSource = new InputSource(new FileInputStream(file));
+        return inputSource;
     }
 }

@@ -40,6 +40,31 @@ public class Validator {
 
     private final static Logger LOG = Logger.getLogger(Validator.class.getName());
 
+    private String keyFile;
+    private String schemaFile;
+    private String signatureXPath;
+    private String bodyXPath;
+
+    /*
+     * Validates digitally signed XML documents against a supplied XML schema
+     * and public key certificate.
+     *
+     * @param keyFile certificate key file in DER forma (filename)
+     * @param schemaFile schema file for the input document
+     * @param signatureXPath XPath location of the Signature element in the validated document
+     *                       Example: "/wst:RequestSecurityTokenResponse/:Signature"
+     * @param bodyXPath  XPath location of the signed body element in the validated document
+     *                  Example: "/wst:RequestSecurityTokenResponse/wst:RequestedSecurityToken/saml:Assertion"
+     *
+     */
+    public Validator(final String keyFile, final String schemaFile,
+                     final String signatureXPath, final String bodyXPath)  {
+        this.keyFile = keyFile;
+        this.schemaFile = schemaFile;
+        this.signatureXPath = signatureXPath;
+        this.bodyXPath = bodyXPath;
+    }
+
     private Element bodyElement = null;
     private Element signatureElement = null;
     private Element validBody = null;
@@ -47,52 +72,43 @@ public class Validator {
     private String idNamespace = null;
 
     /**
-     * Obtains validated body node.
+     * Returns XML structure that is likely to be authentic after
+     * validate() call was successful.
      *
      * @return the assertion if validation was successful, null if not.
      */
     public Element getValidBody() {
-        return validBody;
+        return this.validBody;
     }
 
     /*
-     * These are required on JDK 1.6.25+ and 1.7+ due to much stricter
+     * Sets identifier attribute on XML node before validation is performed.
+     * This is required on JDK 1.6.25+ and 1.7+ due to much stricter
      * reference checking compared with older versions. Typical error:
      *
      * javax.xml.crypto.dsig.XMLSignatureException:
      * javax.xml.crypto.URIReferenceException: com.sun.org.apache.xml.internal.security.utils.resolver.ResourceResolverException:
      * Cannot resolve element with ID
      *
+     * @param ns namespace of the identifier attribute; null if the attribute uses no namespace
+     * @param attr name of the identifier attribute (mandatory)
+     *
      */
-    public void setIdAttribute(String ns, String attr) {
-        idNamespace = ns;
-        idAttribute = attr;
+    public void setIdAttribute(final String ns, final String attr) {
+        this.idNamespace = ns;
+        this.idAttribute = attr;
 
     }
 
     /**
-     * Validate boolean.
+     * Perform schema and signature validation on supplied XML document.
      *
      * @param input the input document for validation
-     * @param keyFile certificate key file in DER forma (filename)
-     * @param schemaFile schema file for the input document
-     * @param signatureXPath XPath location of the Signature element in the validated document
-     *                       Example: "/wst:RequestSecurityTokenResponse/:Signature"
-     * @param bodyXPath  XPath location of the signed body element in the validated document
-     *                  Example: "/wst:RequestSecurityTokenResponse/wst:RequestedSecurityToken/saml:Assertion"
-     * @return the validation status
-     * @throws SAXException the sAX exception
-     * @throws SAXException the sAX exception
-     * @throws SAXException the sAX exception
-     * @throws SAXException the sAX exception
-     * @throws SAXException the sAX exception
-     * @throws SAXException the sAX exception
-     * @throws SAXException the sAX exception
-     * @throws SAXException the sAX exception
-     * @throws SAXException the sAX exception
-     * @throws SAXException the sAX exception
+     * @return true if successful, false if not
+     * @throws SAXException on XML parser errors
+     * @throws IOException on file errors
      */
-    public boolean validate(InputStream input, String keyFile, String schemaFile, String signatureXPath, String bodyXPath)
+    public boolean validate(final String input)
             throws SAXException, IOException, // db.parse()
             ParserConfigurationException // factory.newDocumentBuilder()
             , XPathExpressionException // xpath.evaluate()
@@ -105,7 +121,7 @@ public class Validator {
 		
 		/*
 		 * Create base for XML document parser. Enable XML namespace processing, as SAML
-		 * org.owasp.saml.documents use namespaces. Enable XML validation, which is one of the safeguards against
+		 * documents use namespaces. Enable XML validation, which is one of the safeguards against
 		 * wrapping attacks.
 		 */
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -125,7 +141,7 @@ public class Validator {
     	 * download it automatically each time the validator is run. InputSource will point
     	 * to the same file, just downloaded and stored locally. Example on how to supply it:
     	 * 
-    	 * All remaining org.owasp.saml.schemas will be supplied through entity resolver (see below). The tricky
+    	 * All remaining schemas will be supplied through entity resolver (see below). The tricky
     	 * part seems to be that if the initial schema is not supplied via schemaSource, the entity resolver
     	 * will not be ever called.
     	 */
@@ -160,13 +176,18 @@ public class Validator {
          */
 
         final Map <String, Boolean> hm = new HashMap<String, Boolean>();
+        // disable DTD to prevent override of ID elements
+        hm.put("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
+        // distable schemaLocation override and only rely on local EntityResolver
+        hm.put("http://apache.org/xml/features/honour-all-schemaLocations", false);
+        // validate schema
         hm.put("http://apache.org/xml/features/validation/schema", true);
         hm.put("http://apache.org/xml/features/validation/schema-full-checking", true);
+        // additional features, not available in all parsers
         hm.put("http://apache.org/xml/features/validation/id-idref-checking", true);
         hm.put("http://apache.org/xml/features/validation/identity-constraint-checking", true);
         hm.put("http://apache.org/xml/features/standard-uri-conformant", true);
         hm.put("http://xml.org/sax/features/unicode-normalization-checking", true);
-        hm.put("http://apache.org/xml/features/honour-all-schemaLocations", false);
 
         Iterator<Map.Entry<String, Boolean>> entries = hm.entrySet().iterator();
         while (entries.hasNext()) {
@@ -179,32 +200,30 @@ public class Validator {
         }
 
     	/*
-    	 * Create XML parser object from previously configured base.
+    	 * Create XML parser object from previously configured builder.
     	 */
         DocumentBuilder db = factory.newDocumentBuilder();
     	
     	/*
     	 * Assign a separate error handler to the XML parses. This wouldn't be really necessary
-    	 * but it's Java requiremen. If you use validation (and we do) you need to have an
+    	 * but it's Java requirement. If you use validation (and we do) you need to have an
     	 * error handler. Our error handler will just print what happened.  
     	 */
-        SamlErrorHandler err = new SamlErrorHandler();
-        db.setErrorHandler(err);
+        db.setErrorHandler(new SamlErrorHandler());
         
          /*
-          * Configure an entity resolver, function that will return appropriate org.owasp.saml.schemas
+          * Configure an entity resolver, function that will return appropriate schemas
           * to the parser on demand. This is needed for two reasons:
           * 1) parser would normally download them automatically, but it usually takes a lot of time and they are not cached;
-          * 2) org.owasp.saml.schemas that are referenced with non-URL addresses (not "http://") cannot be downloaded automatically
+          * 2) schemas that are referenced with non-URL addresses (not "http://") cannot be downloaded automatically
           */
-        SamlEntityResolver res = new SamlEntityResolver();
-        db.setEntityResolver(res);
+        db.setEntityResolver(new SamlEntityResolver());
     	
     	 /* Finally load, parse and validate the XML document. Any XML structure manipulations should be
     	  * detected here and result in failed validation.
     	  */
         LOG.info("XML parsing and validation...");
-        Document doc = db.parse(input);
+        Document doc = db.parse(new FileInputStream(input));
 
         // Show the root element of the document and its namespace
         LOG.info("Input document root=" + doc.getFirstChild().getLocalName() + " namespace=" + doc.getFirstChild().getNamespaceURI());
@@ -218,28 +237,28 @@ public class Validator {
 
         xpath.setNamespaceContext(new SamlNamespaceResolver(doc));
 
-        bodyElement = (Element) xpath.evaluate(bodyXPath, doc, XPathConstants.NODE);
-
-        if(bodyElement == null) {
-            LOG.severe("Assertion element not found in the document, exiting");
+        bodyXPath = toFastXPath(bodyXPath, doc);
+        this.bodyElement = (Element) xpath.evaluate(bodyXPath, doc, XPathConstants.NODE);
+        if(this.bodyElement == null) {
+            LOG.severe("Body element not found in the document, exiting");
             return false;
         }
-        LOG.info("assertion=" + bodyElement.getLocalName() );
+        LOG.info("body=" + this.bodyElement.getLocalName() );
 
-        signatureElement = (Element) xpath.evaluate(signatureXPath, doc, XPathConstants.NODE);
-        if(signatureElement == null) {
+        signatureXPath = toFastXPath(signatureXPath, doc);
+        this.signatureElement = (Element) xpath.evaluate(signatureXPath, doc, XPathConstants.NODE);
+        if(this.signatureElement == null) {
             LOG.severe("Signature element not found in the document, exiting");
             return false;
         }
 
         LOG.info("signature_element=" + signatureElement.getLocalName() );
 
-        if(idAttribute != null) {
-            if(idNamespace != null) {
-                bodyElement.setIdAttributeNS(idNamespace, idAttribute, true);
+        if(this.idAttribute != null) {
+            if(this.idNamespace != null) {
+                this.bodyElement.setIdAttributeNS(this.idNamespace, this.idAttribute, true);
             } else {
-                LOG.info("setIdAttribute " + idAttribute);
-                bodyElement.setIdAttribute(idAttribute, true);
+                this.bodyElement.setIdAttribute(this.idAttribute, true);
             }
         }
 
@@ -254,7 +273,7 @@ public class Validator {
          * Create signature validation context referring to this particular signature element
          * and certificate validation method.
          */
-        DOMValidateContext valContext = new DOMValidateContext(new StaticKeySelector(keyFile), signatureElement);
+        DOMValidateContext valContext = new DOMValidateContext(new StaticKeySelector(keyFile), this.signatureElement);
 
         LOG.info("valContext=" + valContext);
 
@@ -270,20 +289,68 @@ public class Validator {
              */
             validBody = bodyElement;
         } else {
-            System.err.println("Signature failed core validation");
+            LOG.warning("Signature failed core validation");
             boolean sv = signature.getSignatureValue().validate(valContext);
-            System.out.println("signature validation status: " + sv);
+            LOG.info("signature validation status: " + sv);
             // check the validation status of each Reference
             Iterator i = signature.getSignedInfo().getReferences().iterator();
             for (int j=0; i.hasNext(); j++) {
                 boolean refValid =
                         ((Reference) i.next()).validate(valContext);
-                System.out.println("ref["+j+"] validity status: " + refValid);
+                LOG.info("ref[" + j + "] validity status: " + refValid);
             }
         }
 
         return coreValidity;
 
+    }
+
+    /*
+     * A very primitive conversion from standard XPath into hardened syntax. Only supports /a/b and /ns1:a/ns2:b syntax
+     * (with any number of any levels). The input XPath expression must be absolute, i.e. it must start from /
+     *
+     * @param xpath Input XPath string
+     * @param doc Validated document (for namespace resolution)
+     *
+     * Example:
+     * Input: /soape:Envelope/soape:Body
+     * Output: /*[local-name()="Envelope" and namespace-uri()="http://schemas.xmlsoap.org/soap/envelope/"][1]/*[local-name()="Body" and namespace-uri()="http://schemas.xmlsoap.org/soap/envelope/"][1]
+     * Reference: http://www.nds.ruhr-uni-bochum.de/research/publications/xspres-closer/
+     */
+    private String toFastXPath(String xpath, Document doc) {
+        String[] parts = xpath.split("/");
+        SamlNamespaceResolver nsres = new SamlNamespaceResolver(doc);
+
+        if(! xpath.startsWith("/")) {
+            throw new IllegalArgumentException("XPath must be absoluve (start with /)")  ;
+        }
+
+        String output = "/*";
+
+        for(String part : parts) {
+            if (!output.endsWith("/*")) {
+                output += "/*";
+            }
+             // we get ["soape:Envelope", ...]
+            if(part.length() == 0)
+                continue;
+
+            String[] elemparts = part.split(":");
+            // we get ["soape", "Envelope"]
+
+            if (elemparts.length == 1) {
+                // no namespace
+                output += String.format("[local-name()=\"%s\"][1]", elemparts[0]);
+            } else if (elemparts.length == 2) {
+                // with namespace
+                output += String.format("[local-name()=\"%s\" and namespace-uri()=\"%s\"][1]", elemparts[1], nsres.getNamespaceURI(elemparts[0]));
+            }  else {
+                throw new IllegalArgumentException("invalid XPath syntax: " + elemparts);
+            }
+        }
+
+        LOG.info("toFastXPath input= " + xpath + " output= " + output);
+        return output;
     }
 
 }

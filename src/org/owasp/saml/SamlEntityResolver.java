@@ -50,7 +50,6 @@ public class SamlEntityResolver implements EntityResolver {
 
         LOG.info("resolveEntity query: systemId=" + systemId + " publicId=" + publicId + " returns \"" + file + "\"");
 
-        InputSource inputSource = new InputSource(new FileInputStream(file));
-        return inputSource;
+        return new InputSource(new FileInputStream(file));
     }
 }

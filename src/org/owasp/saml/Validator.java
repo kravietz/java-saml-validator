@@ -191,7 +191,7 @@ public class Validator {
 
         Iterator<Map.Entry<String, Boolean>> entries = hm.entrySet().iterator();
         while (entries.hasNext()) {
-            Map.Entry<String, Boolean> entry = entries.next();;
+            Map.Entry<String, Boolean> entry = entries.next();
             try {
                 factory.setFeature(entry.getKey(), entry.getValue());
             } catch (Exception e) {

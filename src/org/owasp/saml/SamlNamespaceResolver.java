@@ -42,7 +42,7 @@ public class SamlNamespaceResolver implements NamespaceContext {
         // If this doesn't work resort to hardcoded values
         if (uri == null) {
 
-            final Map<String, String> hm = new HashMap<String, String>();
+            final Map<String, String> hm = new HashMap<>();
             hm.put("saml2", "urn:oasis:names:tc:SAML:2.0:assertion");
             hm.put("saml", "urn:oasis:names:tc:SAML:1.0:assertion");
             hm.put("wsse", "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd");

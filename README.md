@@ -7,4 +7,4 @@ Reference SAML assertion digital signature validator for Java. See article:
 
 Tutorial will be added here soon.
 
-I would like to thank to Juraj Somorovsky for his numerous comments and suggestions. All errors are mine.
+I would like to thank to Juraj Somorovsky for his numerous comments and suggestions. I would like to thank to Juraj Somorovsky for his numerous comments and suggestions. All possible mistakes and innacuracies are mine.

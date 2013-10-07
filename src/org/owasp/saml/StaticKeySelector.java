@@ -51,10 +51,11 @@ public class StaticKeySelector extends KeySelector  {
 
         pk =  cert.getPublicKey();
 
-        LOG.info("Loaded public key" + pk);
+        LOG.info("Loaded public key " + pk);
 
     }
 
+    @Override
     public KeySelectorResult select(KeyInfo keyInfo,
                                     KeySelector.Purpose purpose, AlgorithmMethod method,
                                     XMLCryptoContext context) throws KeySelectorException {
@@ -73,10 +74,11 @@ public class StaticKeySelector extends KeySelector  {
         /**
          * Instantiates a new Simple key selector result.
          */
-        public SimpleKeySelectorResult() {
+        private SimpleKeySelectorResult() {
             key = pk;
         }
 
+        @Override
         public Key getKey() {
             return pk;
         }

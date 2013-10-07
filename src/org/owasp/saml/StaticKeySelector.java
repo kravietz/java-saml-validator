@@ -22,11 +22,8 @@ import java.util.Scanner;
 import java.util.logging.Logger;
 
 /**
- * Created with IntelliJ IDEA.
- * User: pawelkrawczyk
- * Date: 02/10/2013
- * Time: 17:06
- * To change this template use File | Settings | File Templates.
+ * XML digital signature helper class to return just a single, configured X.509 public key certificate
+ * for signature validation.
  */
 public class StaticKeySelector extends KeySelector  {
 

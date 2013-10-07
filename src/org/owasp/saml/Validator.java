@@ -114,8 +114,8 @@ public class Validator {
             , MarshalException // unmarshal()
             , XMLSignatureException, InvalidKeySpecException {
 
-        Element bodyElement = null;
-        Element signatureElement = null;
+        Element bodyElement;
+        Element signatureElement;
 
         LOG.info("Validator starting...");
 		

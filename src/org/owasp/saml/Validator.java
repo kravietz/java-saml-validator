@@ -189,7 +189,7 @@ public class Validator {
         final Map <String, Boolean> hm = new HashMap<>();
         // disable DTD to prevent override of ID elements
         hm.put("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
-        // distable schemaLocation override and only rely on local EntityResolver
+        // disable schemaLocation override and only rely on local EntityResolver
         hm.put("http://apache.org/xml/features/honour-all-schemaLocations", false);
         // validate schema
         hm.put("http://apache.org/xml/features/validation/schema", true);

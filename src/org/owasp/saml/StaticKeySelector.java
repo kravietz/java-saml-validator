@@ -38,7 +38,7 @@ public class StaticKeySelector extends KeySelector  {
      * @param filename PEM key filename
      * @throws FileNotFoundException the file not found exception
      */
-    public StaticKeySelector(String filename) throws IOException, InvalidKeySpecException, NoSuchAlgorithmException, CertificateException {
+    public StaticKeySelector(String filename) throws IOException, CertificateException {
 
         LOG.info("StaticKeySelector starting..." + filename);
 

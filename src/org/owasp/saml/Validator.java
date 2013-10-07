@@ -110,7 +110,6 @@ public class Validator {
             throws SAXException, IOException, // db.parse()
             ParserConfigurationException // factory.newDocumentBuilder()
             , XPathExpressionException // xpath.evaluate()
-            , KeyStoreException // KeyStore.getInstance()
             , NoSuchAlgorithmException, CertificateException // ks.load()
             , MarshalException // unmarshal()
             , XMLSignatureException, InvalidKeySpecException {

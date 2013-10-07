@@ -9,7 +9,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Logger;
 
-public class SamlNamespaceResolver implements NamespaceContext {
+class SamlNamespaceResolver implements NamespaceContext {
 
     private final static Logger LOG = Logger.getLogger(SamlNamespaceResolver.class.getName());
 

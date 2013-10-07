@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
-public class SamlEntityResolver implements EntityResolver {
+class SamlEntityResolver implements EntityResolver {
 
     private final static Logger LOG = Logger.getLogger(SamlEntityResolver.class.getName());
 

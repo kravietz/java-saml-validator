@@ -23,133 +23,120 @@ public class ValidatorTest {
     @Test
     public void testValidateSAML1() throws SAXException, IOException, ParserConfigurationException, XPathExpressionException, KeyStoreException, NoSuchAlgorithmException, CertificateException, MarshalException, XMLSignatureException, InvalidKeySpecException {
 
-        Validator val = new Validator();
-
-        final String bodyXPath = "/soape:Envelope/soape:Body";
-        final String signatureXPath = "/soape:Envelope/soape:Header/wsse:Security/ds:Signature";
-        final String schemaFile = "schemas/soap-envelope.xsd";
-        final String keyFile = "documents/signer1.der";
-
-        FileInputStream input = new FileInputStream("documents/file0.xml");
+        Validator val = new Validator("documents/signer1.der", "schemas/soap-envelope.xsd",
+                // basic XPath syntax
+                "/soape:Envelope/soape:Header/wsse:Security/ds:Signature",
+                "/soape:Envelope/soape:Body");
 
         // soap-envelope.xsd does not specify Id field so XML signature validator will crash if this is not specified
         val.setIdAttribute("http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd", "Id");
 
-        assertTrue(val.validate(input, keyFile, schemaFile, signatureXPath, bodyXPath));
+        assertTrue(val.validate("documents/file0.xml"));
 
     }
 
+    /*
+    @Test
+
+    public void testValidateSAML2() throws SAXException, IOException, ParserConfigurationException, XPathExpressionException, KeyStoreException, NoSuchAlgorithmException, CertificateException, MarshalException, XMLSignatureException, InvalidKeySpecException {
+
+        Validator val = new Validator("documents/signer1.der", "schemas/soap-envelope.xsd",
+
+                "/soape:Envelope/soape:Header/wsse:Security/ds:Signature",
+                "/*[local-name()="Envelope" and namespace-uri()="http://schemas.xmlsoap.org/soap/envelope/"][1]/*[local-name()=\"Body\" and namespace-uri()=\"http://schemas.xmlsoap.org/soap/envelope/\"][1]");
+                 /*[local-name()="Envelope" and namespace-uri()="http://schemas.xmlsoap.org/soap/envelope/"][1]/[local-name()="Body" and namespace-uri()="http://schemas.xmlsoap.org/soap/envelope/"][1]
+        // soap-envelope.xsd does not specify Id field so XML signature validator will crash if this is not specified
+        val.setIdAttribute("http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd", "Id");
+
+        assertTrue(val.validate("documents/file0.xml"));
+
+    }
+    */
+
+    /*
+     * All "GG" tests are based on private documents that are not being published.
+     */
     @Test
     public void testValidateGG1() throws SAXException, IOException, ParserConfigurationException, XPathExpressionException, KeyStoreException, NoSuchAlgorithmException, CertificateException, MarshalException, XMLSignatureException, InvalidKeySpecException {
 
-        Validator val = new Validator();
-
-        final String bodyXPath = "/wst:RequestSecurityTokenResponse/wst:RequestedSecurityToken/saml:Assertion";
-        final String signatureXPath = "/wst:RequestSecurityTokenResponse/:Signature";
-        final String schemaFile = "schemas/WS-Trust.xsd";
-        final String keyFile = "documents/gg.der";
-
-        FileInputStream input = new FileInputStream("documents/ggindividual.xml");
+        Validator val = new Validator("documents/gg.der", "schemas/WS-Trust.xsd",
+                "/wst:RequestSecurityTokenResponse/:Signature",
+                "/wst:RequestSecurityTokenResponse/wst:RequestedSecurityToken/saml:Assertion");
 
         // soap-envelope.xsd does not specify Id field so XML signature validator will crash if this is not specified
         val.setIdAttribute(null, "AssertionID");
 
-        assertTrue(val.validate(input, keyFile, schemaFile, signatureXPath, bodyXPath));
+        assertTrue(val.validate("documents/ggindividual.xml"));
 
     }
 
     @Test
     public void testValidateGG2() throws SAXException, IOException, ParserConfigurationException, XPathExpressionException, KeyStoreException, NoSuchAlgorithmException, CertificateException, MarshalException, XMLSignatureException, InvalidKeySpecException {
 
-        Validator val = new Validator();
-
-        final String bodyXPath = "/wst:RequestSecurityTokenResponse/wst:RequestedSecurityToken/saml:Assertion";
-        final String signatureXPath = "/wst:RequestSecurityTokenResponse/:Signature";
-        final String schemaFile = "schemas/WS-Trust.xsd";
-        final String keyFile = "documents/gg.der";
-
-        FileInputStream input = new FileInputStream("documents/ggagent.xml");
+        Validator val = new Validator("documents/gg.der", "schemas/WS-Trust.xsd",
+                "/wst:RequestSecurityTokenResponse/:Signature",
+                "/wst:RequestSecurityTokenResponse/wst:RequestedSecurityToken/saml:Assertion");
 
         // soap-envelope.xsd does not specify Id field so XML signature validator will crash if this is not specified
         val.setIdAttribute(null, "AssertionID");
 
-        assertTrue(val.validate(input, keyFile, schemaFile, signatureXPath, bodyXPath));
+        assertTrue(val.validate("documents/ggagent.xml"));
 
     }
 
     @Test
     public void testValidateGG3() throws SAXException, IOException, ParserConfigurationException, XPathExpressionException, KeyStoreException, NoSuchAlgorithmException, CertificateException, MarshalException, XMLSignatureException, InvalidKeySpecException {
 
-        Validator val = new Validator();
-
-        final String bodyXPath = "/wst:RequestSecurityTokenResponse/wst:RequestedSecurityToken/saml:Assertion";
-        final String signatureXPath = "/wst:RequestSecurityTokenResponse/:Signature";
-        final String schemaFile = "schemas/WS-Trust.xsd";
-        final String keyFile = "documents/gg.der";
-
-        FileInputStream input = new FileInputStream("documents/ggorganisation.xml");
+        Validator val = new Validator("documents/gg.der", "schemas/WS-Trust.xsd",
+                "/wst:RequestSecurityTokenResponse/:Signature",
+                "/wst:RequestSecurityTokenResponse/wst:RequestedSecurityToken/saml:Assertion");
 
         // soap-envelope.xsd does not specify Id field so XML signature validator will crash if this is not specified
         val.setIdAttribute(null, "AssertionID");
 
-        assertTrue(val.validate(input, keyFile, schemaFile, signatureXPath, bodyXPath));
+        assertTrue(val.validate("documents/ggorganisation.xml"));
 
     }
 
     @Test
     public void testValidateGG4() throws SAXException, IOException, ParserConfigurationException, XPathExpressionException, KeyStoreException, NoSuchAlgorithmException, CertificateException, MarshalException, XMLSignatureException, InvalidKeySpecException {
 
-        Validator val = new Validator();
-
-        final String bodyXPath = "/wst:RequestSecurityTokenResponse/wst:RequestedSecurityToken/saml:Assertion";
-        final String signatureXPath = "/wst:RequestSecurityTokenResponse/:Signature";
-        final String schemaFile = "schemas/WS-Trust.xsd";
-        final String keyFile = "documents/gg.der";
-
-        FileInputStream input = new FileInputStream("documents/gginvalid.xml");
+        Validator val = new Validator("documents/gg.der", "schemas/WS-Trust.xsd",
+                "/wst:RequestSecurityTokenResponse/:Signature",
+                "/wst:RequestSecurityTokenResponse/wst:RequestedSecurityToken/saml:Assertion");
 
         // soap-envelope.xsd does not specify Id field so XML signature validator will crash if this is not specified
         val.setIdAttribute(null, "AssertionID");
 
-        assertFalse(val.validate(input, keyFile, schemaFile, signatureXPath, bodyXPath));
+        assertFalse(val.validate("documents/gginvalid.xml"));
 
     }
 
     @Test
     public void testValidateGG5() throws SAXException, IOException, ParserConfigurationException, XPathExpressionException, KeyStoreException, NoSuchAlgorithmException, CertificateException, MarshalException, XMLSignatureException, InvalidKeySpecException {
 
-        Validator val = new Validator();
-
-        final String bodyXPath = "/wst:RequestSecurityTokenResponse/wst:RequestedSecurityToken/saml:Assertion";
-        final String signatureXPath = "/wst:RequestSecurityTokenResponse/:Signature";
-        final String schemaFile = "schemas/WS-Trust.xsd";
-        final String keyFile = "documents/gg.der";
-
-        FileInputStream input = new FileInputStream("documents/ggperformance.xml");
+        Validator val = new Validator("documents/gg.der", "schemas/WS-Trust.xsd",
+                "/wst:RequestSecurityTokenResponse/:Signature",
+                "/wst:RequestSecurityTokenResponse/wst:RequestedSecurityToken/saml:Assertion");
 
         // soap-envelope.xsd does not specify Id field so XML signature validator will crash if this is not specified
         val.setIdAttribute(null, "AssertionID");
 
-        assertTrue(val.validate(input, keyFile, schemaFile, signatureXPath, bodyXPath));
+        assertTrue(val.validate("documents/ggperformance.xml"));
 
     }
 
     @Test
     public void testValidateGG6() throws SAXException, IOException, ParserConfigurationException, XPathExpressionException, KeyStoreException, NoSuchAlgorithmException, CertificateException, MarshalException, XMLSignatureException, InvalidKeySpecException {
 
-        Validator val = new Validator();
-
-        final String bodyXPath = "/wst:RequestSecurityTokenResponse/wst:RequestedSecurityToken/saml:Assertion";
-        final String signatureXPath = "/wst:RequestSecurityTokenResponse/:Signature";
-        final String schemaFile = "schemas/WS-Trust.xsd";
-        final String keyFile = "documents/gg.der";
-
-        FileInputStream input = new FileInputStream("documents/ggperformance2.xml");
+        Validator val = new Validator("documents/gg.der", "schemas/WS-Trust.xsd",
+                "/wst:RequestSecurityTokenResponse/:Signature",
+                "/wst:RequestSecurityTokenResponse/wst:RequestedSecurityToken/saml:Assertion");
 
         // soap-envelope.xsd does not specify Id field so XML signature validator will crash if this is not specified
         val.setIdAttribute(null, "AssertionID");
 
-        assertTrue(val.validate(input, keyFile, schemaFile, signatureXPath, bodyXPath));
+        assertTrue(val.validate("documents/ggperformance2.xml"));
 
     }
 

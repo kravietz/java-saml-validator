@@ -189,9 +189,7 @@ public class Validator {
         hm.put("http://apache.org/xml/features/standard-uri-conformant", true);
         hm.put("http://xml.org/sax/features/unicode-normalization-checking", true);
 
-        Iterator<Map.Entry<String, Boolean>> entries = hm.entrySet().iterator();
-        while (entries.hasNext()) {
-            Map.Entry<String, Boolean> entry = entries.next();
+        for (Map.Entry<String, Boolean> entry : hm.entrySet()) {
             try {
                 factory.setFeature(entry.getKey(), entry.getValue());
             } catch (Exception e) {

@@ -65,8 +65,6 @@ public class Validator {
         this.bodyXPath = bodyXPath;
     }
 
-    private Element bodyElement = null;
-    private Element signatureElement = null;
     private Element validBody = null;
     private String idAttribute = null;
     private String idNamespace = null;
@@ -116,6 +114,9 @@ public class Validator {
             , NoSuchAlgorithmException, CertificateException // ks.load()
             , MarshalException // unmarshal()
             , XMLSignatureException, InvalidKeySpecException {
+
+        Element bodyElement = null;
+        Element signatureElement = null;
 
         LOG.info("Validator starting...");
 		
@@ -238,16 +239,16 @@ public class Validator {
         xpath.setNamespaceContext(new SamlNamespaceResolver(doc));
 
         bodyXPath = toFastXPath(bodyXPath, doc);
-        this.bodyElement = (Element) xpath.evaluate(bodyXPath, doc, XPathConstants.NODE);
-        if(this.bodyElement == null) {
+        bodyElement = (Element) xpath.evaluate(bodyXPath, doc, XPathConstants.NODE);
+        if(bodyElement == null) {
             LOG.severe("Body element not found in the document, exiting");
             return false;
         }
-        LOG.info("body=" + this.bodyElement.getLocalName() );
+        LOG.info("body=" + bodyElement.getLocalName() );
 
         signatureXPath = toFastXPath(signatureXPath, doc);
-        this.signatureElement = (Element) xpath.evaluate(signatureXPath, doc, XPathConstants.NODE);
-        if(this.signatureElement == null) {
+        signatureElement = (Element) xpath.evaluate(signatureXPath, doc, XPathConstants.NODE);
+        if(signatureElement == null) {
             LOG.severe("Signature element not found in the document, exiting");
             return false;
         }
@@ -255,10 +256,10 @@ public class Validator {
         LOG.info("signature_element=" + signatureElement.getLocalName() );
 
         if(this.idAttribute != null) {
-            if(this.idNamespace != null) {
-                this.bodyElement.setIdAttributeNS(this.idNamespace, this.idAttribute, true);
+            if(idNamespace != null) {
+                bodyElement.setIdAttributeNS(this.idNamespace, this.idAttribute, true);
             } else {
-                this.bodyElement.setIdAttribute(this.idAttribute, true);
+                bodyElement.setIdAttribute(this.idAttribute, true);
             }
         }
 
@@ -273,7 +274,7 @@ public class Validator {
          * Create signature validation context referring to this particular signature element
          * and certificate validation method.
          */
-        DOMValidateContext valContext = new DOMValidateContext(new StaticKeySelector(keyFile), this.signatureElement);
+        DOMValidateContext valContext = new DOMValidateContext(new StaticKeySelector(keyFile), signatureElement);
 
         LOG.info("valContext=" + valContext);
 

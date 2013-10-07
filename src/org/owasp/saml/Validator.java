@@ -175,7 +175,7 @@ public class Validator {
          *  http://xerces.apache.org/xerces2-j/features.html
          */
 
-        final Map <String, Boolean> hm = new HashMap<String, Boolean>();
+        final Map <String, Boolean> hm = new HashMap<>();
         // disable DTD to prevent override of ID elements
         hm.put("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
         // distable schemaLocation override and only rely on local EntityResolver
@@ -345,7 +345,7 @@ public class Validator {
                 // with namespace
                 output += String.format("[local-name()=\"%s\" and namespace-uri()=\"%s\"][1]", elemparts[1], nsres.getNamespaceURI(elemparts[0]));
             }  else {
-                throw new IllegalArgumentException("invalid XPath syntax: " + elemparts);
+                throw new IllegalArgumentException("invalid XPath syntax: " + part);
             }
         }
 

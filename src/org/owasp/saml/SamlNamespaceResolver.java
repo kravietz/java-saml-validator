@@ -33,17 +33,13 @@ public class SamlNamespaceResolver implements NamespaceContext {
      *            to search for
      * @return uri
      */
+    @Override
     public String getNamespaceURI(String prefix) {
 
-        String uri = null;
-        final String SAML10 = "urn:oasis:names:tc:SAML:1.0:assertion";
-        final String SAML20 = "urn:oasis:names:tc:SAML:2.0:assertion";
-        final String WSSE = "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd";
-        final String DS = "http://www.w3.org/2000/09/xmldsig#";
-        final String WSU = "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd";
+        // First try to automatically resolve the namespace URI based on document contents
+        String uri = this.sourceDocument.lookupNamespaceURI(prefix);
 
-        uri =  sourceDocument.lookupNamespaceURI(prefix);
-
+        // If this doesn't work resort to hardcoded values
         if (uri == null) {
 
             final Map<String, String> hm = new HashMap<String, String>();
@@ -51,13 +47,16 @@ public class SamlNamespaceResolver implements NamespaceContext {
             hm.put("saml", "urn:oasis:names:tc:SAML:1.0:assertion");
             hm.put("wsse", "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd");
             hm.put("ds", "http://www.w3.org/2000/09/xmldsig#");
-            hm.put(XMLConstants.DEFAULT_NS_PREFIX, "http://www.w3.org/2000/09/xmldsig#");
             hm.put("wsu", "urn:oasis:names:tc:SAML:2.0:assertion");
             hm.put("saml2", "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd");
             hm.put("xs", "http://www.w3.org/2001/XMLSchema");
             hm.put("wsp", "http://schemas.xmlsoap.org/ws/2004/09/policy");
             hm.put("xsa", "http://schemas.xmlsoap.org/ws/2004/08/addressing");
             hm.put("wst", "http://schemas.xmlsoap.org/ws/2005/02/trust");
+
+            // This worked for me, most likely won't work for you
+            // default prefix is just empty prefix, so <Signature> and not <ds:Signature>
+            hm.put(XMLConstants.DEFAULT_NS_PREFIX, "http://www.w3.org/2000/09/xmldsig#");
 
             uri = hm.get(prefix);
         }
@@ -71,10 +70,12 @@ public class SamlNamespaceResolver implements NamespaceContext {
         return uri;
     }
 
+    @Override
     public String getPrefix(String namespaceURI) {
         return sourceDocument.lookupPrefix(namespaceURI);
     }
 
+    @Override
     public Iterator getPrefixes(String namespaceURI) {
         // not implemented yet
         return null;

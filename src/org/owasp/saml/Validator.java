@@ -32,7 +32,9 @@ import javax.xml.xpath.XPathFactory;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.security.spec.InvalidKeySpecException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -275,7 +277,10 @@ public class Validator {
          * Create signature validation context referring to this particular signature element
          * and certificate validation method.
          */
-        DOMValidateContext valContext = new DOMValidateContext(new StaticKeySelector(keyFile), signatureElement);
+        CertificateFactory cf = CertificateFactory.getInstance("X.509");
+        Certificate cert = cf.generateCertificate(new FileInputStream(keyFile));
+        LOG.info("cert=" + cert);
+        DOMValidateContext valContext = new DOMValidateContext(cert.getPublicKey(), signatureElement);
 
         LOG.info("valContext=" + valContext);
 

@@ -13,7 +13,6 @@ package org.owasp.saml;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import javax.xml.XMLConstants;
@@ -26,23 +25,19 @@ import javax.xml.crypto.dsig.dom.DOMValidateContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.validation.Schema;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.spec.InvalidKeySpecException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.logging.Logger;
-import javax.xml.validation.SchemaFactory;
 
 /**
  * The type Validator.
@@ -50,11 +45,13 @@ import javax.xml.validation.SchemaFactory;
 public class Validator {
 
     private final static Logger LOG = Logger.getLogger(Validator.class.getName());
-
     private String keyFile;
     private String schemaFile;
     private String signatureXPath;
     private String bodyXPath;
+    private Element validBody = null;
+    private String idAttribute = null;
+    private String idNamespace = null;
 
     /*
      * Validates digitally signed XML documents against a supplied XML schema
@@ -69,16 +66,12 @@ public class Validator {
      *
      */
     public Validator(final String keyFile, final String schemaFile,
-                     final String signatureXPath, final String bodyXPath)  {
+                     final String signatureXPath, final String bodyXPath) {
         this.keyFile = keyFile;
         this.schemaFile = schemaFile;
         this.signatureXPath = signatureXPath;
         this.bodyXPath = bodyXPath;
     }
-
-    private Element validBody = null;
-    private String idAttribute = null;
-    private String idNamespace = null;
 
     /**
      * Returns XML structure that is likely to be authentic after
@@ -115,7 +108,7 @@ public class Validator {
      * @param input the input document for validation
      * @return true if successful, false if not
      * @throws SAXException on XML parser errors
-     * @throws IOException on file errors
+     * @throws IOException  on file errors
      */
     public boolean validate(final String input)
             throws SAXException, IOException, // db.parse()
@@ -129,7 +122,7 @@ public class Validator {
         Element signatureElement;
 
         LOG.info("Validator starting...");
-		
+
 		/*
 		 * Create base for XML document parser. Enable XML namespace processing, as SAML
 		 * documents use namespaces. Enable XML validation, which is one of the safeguards against
@@ -186,7 +179,7 @@ public class Validator {
          *  http://xerces.apache.org/xerces2-j/features.html
          */
 
-        final Map <String, Boolean> hm = new HashMap<>();
+        final Map<String, Boolean> hm = new HashMap<>();
         // disable DTD to prevent override of ID elements
         hm.put("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
         // disable schemaLocation override and only rely on local EntityResolver
@@ -248,23 +241,23 @@ public class Validator {
 
         bodyXPath = toFastXPath(bodyXPath, doc);
         bodyElement = (Element) xpath.evaluate(bodyXPath, doc, XPathConstants.NODE);
-        if(bodyElement == null) {
+        if (bodyElement == null) {
             LOG.severe("Body element not found in the document, exiting");
             return false;
         }
-        LOG.info("body=" + bodyElement.getLocalName() );
+        LOG.info("body=" + bodyElement.getLocalName());
 
         signatureXPath = toFastXPath(signatureXPath, doc);
         signatureElement = (Element) xpath.evaluate(signatureXPath, doc, XPathConstants.NODE);
-        if(signatureElement == null) {
+        if (signatureElement == null) {
             LOG.severe("Signature element not found in the document, exiting");
             return false;
         }
 
-        LOG.info("signature_element=" + signatureElement.getLocalName() );
+        LOG.info("signature_element=" + signatureElement.getLocalName());
 
-        if(this.idAttribute != null) {
-            if(idNamespace != null) {
+        if (this.idAttribute != null) {
+            if (idNamespace != null) {
                 bodyElement.setIdAttributeNS(this.idNamespace, this.idAttribute, true);
             } else {
                 bodyElement.setIdAttribute(this.idAttribute, true);
@@ -292,7 +285,7 @@ public class Validator {
         boolean coreValidity = signature.validate(valContext);
         LOG.info("validity=" + coreValidity);
 
-        if(coreValidity) {
+        if (coreValidity) {
         	/*
              * Copy the validation assertion element for user retrieval.
              */
@@ -303,7 +296,7 @@ public class Validator {
             LOG.info("signature validation status: " + sv);
             // check the validation status of each Reference
             Iterator i = signature.getSignedInfo().getReferences().iterator();
-            for (int j=0; i.hasNext(); j++) {
+            for (int j = 0; i.hasNext(); j++) {
                 boolean refValid =
                         ((Reference) i.next()).validate(valContext);
                 LOG.info("ref[" + j + "] validity status: " + refValid);
@@ -330,18 +323,18 @@ public class Validator {
         String[] parts = xpath.split("/");
         SamlNamespaceResolver nsres = new SamlNamespaceResolver(doc);
 
-        if(! xpath.startsWith("/")) {
-            throw new IllegalArgumentException("XPath must be absoluve (start with /)")  ;
+        if (!xpath.startsWith("/")) {
+            throw new IllegalArgumentException("XPath must be absoluve (start with /)");
         }
 
         String output = "/*";
 
-        for(String part : parts) {
+        for (String part : parts) {
             if (!output.endsWith("/*")) {
                 output += "/*";
             }
-             // we get ["soape:Envelope", ...]
-            if(part.length() == 0)
+            // we get ["soape:Envelope", ...]
+            if (part.length() == 0)
                 continue;
 
             String[] elemparts = part.split(":");
@@ -353,7 +346,7 @@ public class Validator {
             } else if (elemparts.length == 2) {
                 // with namespace
                 output += String.format("[local-name()=\"%s\" and namespace-uri()=\"%s\"][1]", elemparts[1], nsres.getNamespaceURI(elemparts[0]));
-            }  else {
+            } else {
                 throw new IllegalArgumentException("invalid XPath syntax: " + part);
             }
         }

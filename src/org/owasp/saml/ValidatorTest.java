@@ -1,3 +1,14 @@
+/*
+ * Copyright Pawel Krawczyk (c) 2013.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+ *
+ * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 package org.owasp.saml;
 
 import static org.junit.Assert.*;
@@ -34,24 +45,6 @@ public class ValidatorTest {
         assertTrue(val.validate("documents/file0.xml"));
 
     }
-
-    /*
-    @Test
-
-    public void testValidateSAML2() throws SAXException, IOException, ParserConfigurationException, XPathExpressionException, KeyStoreException, NoSuchAlgorithmException, CertificateException, MarshalException, XMLSignatureException, InvalidKeySpecException {
-
-        Validator val = new Validator("documents/signer1.der", "schemas/soap-envelope.xsd",
-
-                "/soape:Envelope/soape:Header/wsse:Security/ds:Signature",
-                "/*[local-name()="Envelope" and namespace-uri()="http://schemas.xmlsoap.org/soap/envelope/"][1]/*[local-name()=\"Body\" and namespace-uri()=\"http://schemas.xmlsoap.org/soap/envelope/\"][1]");
-                 /*[local-name()="Envelope" and namespace-uri()="http://schemas.xmlsoap.org/soap/envelope/"][1]/[local-name()="Body" and namespace-uri()="http://schemas.xmlsoap.org/soap/envelope/"][1]
-        // soap-envelope.xsd does not specify Id field so XML signature validator will crash if this is not specified
-        val.setIdAttribute("http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd", "Id");
-
-        assertTrue(val.validate("documents/file0.xml"));
-
-    }
-    */
 
     /*
      * All "GG" tests are based on private documents that are not being published.

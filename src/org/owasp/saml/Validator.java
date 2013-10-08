@@ -211,7 +211,7 @@ public class Validator {
     	 * but it's Java requirement. If you use validation (and we do) you need to have an
     	 * error handler. Our error handler will just print what happened.  
     	 */
-        db.setErrorHandler(new SamlErrorHandler());
+        db.setErrorHandler(new ErrorHandler());
         
          /*
           * Configure an entity resolver, function that will return appropriate schemas
@@ -219,7 +219,7 @@ public class Validator {
           * 1) parser would normally download them automatically, but it usually takes a lot of time and they are not cached;
           * 2) schemas that are referenced with non-URL addresses (not "http://") cannot be downloaded automatically
           */
-        db.setEntityResolver(new SamlEntityResolver());
+        db.setEntityResolver(new EntityResolver());
     	
     	 /* Finally load, parse and validate the XML document. Any XML structure manipulations should be
     	  * detected here and result in failed validation.
@@ -237,7 +237,7 @@ public class Validator {
 		  */
         XPath xpath = XPathFactory.newInstance().newXPath();
 
-        xpath.setNamespaceContext(new SamlNamespaceResolver(doc));
+        xpath.setNamespaceContext(new NamespaceResolver(doc));
 
         bodyXPath = toFastXPath(bodyXPath, doc);
         bodyElement = (Element) xpath.evaluate(bodyXPath, doc, XPathConstants.NODE);
@@ -321,7 +321,7 @@ public class Validator {
      */
     private String toFastXPath(String xpath, Document doc) {
         String[] parts = xpath.split("/");
-        SamlNamespaceResolver nsres = new SamlNamespaceResolver(doc);
+        NamespaceResolver nsres = new NamespaceResolver(doc);
 
         if (!xpath.startsWith("/")) {
             throw new IllegalArgumentException("XPath must be absoluve (start with /)");

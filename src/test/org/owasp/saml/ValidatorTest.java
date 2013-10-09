@@ -11,8 +11,6 @@
 
 package test.org.owasp.saml;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.owasp.saml.Validator;
 import org.xml.sax.SAXException;
@@ -38,14 +36,6 @@ import static org.junit.Assert.assertTrue;
  * @since <pre>Oct 7, 2013</pre>
  */
 public class ValidatorTest {
-
-    @Before
-    public void before() throws Exception {
-    }
-
-    @After
-    public void after() throws Exception {
-    }
 
     /**
      * Method: validate(final String input)

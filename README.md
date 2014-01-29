@@ -3,11 +3,12 @@ java-saml-validator
 
 Reference SAML assertion digital signature validator for Java. This class can be used to validate SAML tokens
 and other documents using XML Digital Signature. It attempts to perform as thorough validation
-as possible to counter attacks such as XML signature wrapping. See article for theory:
+as possible to counter attacks such as XML signature wrapping. It also includes basic safeguards against
+ XML external entities (XXE) attacks. See the article for theory:
 
 * [Secure SAML validation to prevent XML signature wrapping attacks](http://ipsec.pl/node/1119)
 
-Usage:
+Basic usage:
 
     Validator val = new Validator(x509_certificate, xsd_schema,
                     xpath_of_signature_element,
@@ -27,4 +28,4 @@ Example from the test suite:
 
     assertTrue(val.validate("documents/file0.xml"));
 
-I would like to thank to Juraj Somorovsky for his numerous comments and suggestions. I would like to thank to Juraj Somorovsky for his numerous comments and suggestions. All possible mistakes and innacuracies are mine.
+I would like to thank to Juraj Somorovsky for his numerous comments and suggestions. All possible mistakes and innacuracies are mine.

@@ -1,5 +1,5 @@
 /*
- * Copyright Pawel Krawczyk (c) 2013.
+ * Copyright Pawel Krawczyk (c) 2014.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -73,7 +73,7 @@ class NamespaceResolver implements NamespaceContext {
         }
 
         if (uri == null ) {
-            LOG.warning("getNamespaceURI prefix=" + prefix + " returns=" + uri);
+            LOG.warning("null URI in getNamespaceURI prefix=" + prefix);
         } else {
             LOG.info("getNamespaceURI prefix=" + prefix + " returns=" + uri);
         }

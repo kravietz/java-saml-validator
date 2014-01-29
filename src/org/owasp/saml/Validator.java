@@ -1,5 +1,5 @@
 /*
- * Copyright Pawel Krawczyk (c) 2013.
+ * Copyright Pawel Krawczyk (c) 2014.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -194,6 +194,9 @@ public class Validator {
         hm.put("http://apache.org/xml/features/validation/identity-constraint-checking", true);
         hm.put("http://apache.org/xml/features/standard-uri-conformant", true);
         hm.put("http://xml.org/sax/features/unicode-normalization-checking", true);
+        // prevent external entity processing (XXE)
+        hm.put("http://xml.org/sax/features/external-general-entities", false);
+        hm.put("http://apache.org/xml/features/disallow-doctype-decl", false);
 
         for (Map.Entry<String, Boolean> entry : hm.entrySet()) {
             try {

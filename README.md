@@ -6,7 +6,7 @@ and other documents using XML Digital Signature. It attempts to perform as thoro
 as possible to counter attacks such as XML signature wrapping. It also includes basic safeguards against
  XML external entities (XXE) attacks. See the article for theory:
 
-* [Secure SAML validation to prevent XML signature wrapping attacks](http://ipsec.pl/node/1119)
+* [Secure SAML validation to prevent XML signature wrapping attacks](http://ipsec.pl/kryptografia/2013/secure-saml-validation-prevent-xml-signature-wrapping-attacks.html)
 
 Basic usage:
 

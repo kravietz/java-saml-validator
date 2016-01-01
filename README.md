@@ -1,6 +1,7 @@
 java-saml-validator
 ===================
 ***Note:*** This library uses JDK8 specific features so most likely won't work on JDK7.
+
 Reference SAML assertion digital signature validator for Java. This class can be used to validate SAML tokens
 and other documents using XML Digital Signature. It attempts to perform as thorough validation
 as possible to counter attacks such as XML signature wrapping. It also includes basic safeguards against
